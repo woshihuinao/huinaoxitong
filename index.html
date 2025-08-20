@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>HuiNao1 桌面</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #FFC0CB; /* 粉色壁纸 */
+            color: #fff;
+            font-family: 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        .desktop {
+            position: relative;
+            height: calc(100vh - 40px);
+            background-color: #FFC0CB;
+            background-image: url('');
+            background-size: cover;
+        }
+        
+        .version-info {
+            position: absolute;
+            bottom: 50px;
+            right: 20px;
+            font-size: 24px;
+            color: #000;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(255,255,255,0.5);
+        }
+        
+        .desktop-icon {
+            position: absolute;
+            width: 80px;
+            text-align: center;
+            padding: 5px;
+            cursor: pointer;
+        }
+        
+        .desktop-icon img {
+            width: 48px;
+            height: 48px;
+        }
+        
+        .desktop-icon span {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #000; /* 黑色文字更显眼 */
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+        
+        .desktop-icon:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 40px;
+            background-color: #1a1a1a;
+            display: flex;
+            align-items: center;
+        }
+        
+        .start-button {
+            height: 100%;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            background-color: #2a2a2a;
+            cursor: pointer;
+            color: white;
+        }
+        
+        .start-button:hover {
+            background-color: #3a3a3a;
+        }
+        
+        .start-menu {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            width: 300px;
+            height: 400px;
+            background-color: #2a2a2a;
+            display: none;
+            border-top-right-radius: 5px;
+            box-shadow: 3px -3px 5px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+        }
+        
+        .start-menu-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+        
+        .start-menu-item img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        
+        .start-menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .window {
+            position: absolute;
+            width: 600px;
+            background-color: #2a2a2a;
+            border-radius: 5px;
+            overflow: hidden;
+            display: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .window-header {
+            height: 30px;
+            background-color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            cursor: move;
+            color: white;
+        }
+        
+        .window-title {
+            font-size: 14px;
+        }
+        
+        .window-close {
+            cursor: pointer;
+        }
+        
+        .window-content {
+            padding: 15px;
+            height: calc(100% - 30px);
+            overflow: auto;
+            color: white;
+        }
+        
+        .disk-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .disk-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .disk-progress {
+            flex-grow: 1;
+            height: 20px;
+            background-color: #1a1a1a;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .disk-progress-bar {
+            height: 100%;
+            width: 85%;
+            background-color: #4CAF50;
+        }
+        
+        .disk-details {
+            margin-left: 15px;
+        }
+        
+        .browser-window {
+            width: 800px;
+            height: 600px;
+        }
+        
+        .browser-content {
+            height: 100%;
+            border: none;
+        }
+        
+        .file-creator {
+            width: 500px;
+            height: 300px;
+        }
+        
+        .file-type-selector {
+            margin-bottom: 15px;
+        }
+        
+        .file-name-input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+        }
+        
+        .file-content-textarea {
+            width: 100%;
+            height: 150px;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+        }
+        
+        .create-file-btn {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        /* 蓝屏样式 */
+        .blue-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0078d7;
+            color: white;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        
+        .blue-screen-content {
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        .blue-screen-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .blue-screen-text {
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .blue-screen-progress {
+            width: 100%;
+            height: 20px;
+            background-color: rgba(255,255,255,0.2);
+            margin-top: 20px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .blue-screen-progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: white;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="desktop">
+        <div class="version-info">HUI NAO 1 BETA 2.0</div>
+        
+        <!-- 桌面图标 -->
+        <div class="desktop-icon" style="left: 20px; top: 20px;" onclick="openWindow('my-computer')">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTQsMUEyLDIgMCAwLDAgMiwzdjE4YTIgMiAwIDAsMCAyLDJoMTZhMiAyIDAgMCwwIDItMlYzQTIsMiAwIDAsMCAyMCwxSDRNNCwzaDE2djE4SDRWMyIvPjwvc3ZnPg==" alt="此电脑">
+            <span>此电脑</span>
+        </div>
+        
+        <div class="desktop-icon" style="left: 20px; top: 100px;" onclick="playAudio()">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTEyLDIwQTgsOCAwIDAsMSA0LDEyQTgsOCAwIDAsMSAxMiw0QTgsOCAwIDAsMSAyMCwxMkE4LDggMCAwLDEgMTIsMjBNMTIsMkExMCwxMCAwIDAsMCAyLDEyQTEwLDEwIDAgMCwwIDEyLDIyQTEwLDEwIDAgMCwwIDIyLDEyQTEwLDEwIDAgMCwwIDEyLDJNMTAsMTYuNUwxNiwxMkwxMCw3LjVWMTYuNVoiIC8+PC9zdmc+" alt="会闹音乐">
+            <span>会闹音乐</span>
+        </div>
+        
+        <div class="desktop-icon" style="left: 20px; top: 180px;" onclick="openWindow('bing-browser')">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTE5LDE4SDFWNEgxOU0yMCwyMEg0VjIySDE5VjI0SDIwVjIwTTQuMiw5SDYuN0w3LjUsNy42NEwxMC4xLDEzSDEyLjhMMTUuMyw3LjY0TDE2LjEsOUgxOC44TDE0LjQsMTYuODZMMTcuNiwyMUgxNC45TDEyLjEsMTQuOTlMOS4zLDIxSDYuNUw5LjcsMTYuODZMNC4yLDlaTTIxLDFBMiwyIDAgMCwxIDIzLDNWMTdBMiwyIDAgMCwxIDIxLDE5SDNBMiwyIDAgMCwxIDEsMTdWM0EyLDIgMCAwLDEgMywxSDIxTTIxLDNIM1YxN0gyMVYzWiIgLz48L3N2Zz4=" alt="会闹浏览器">
+            <span>会闹浏览器</span>
+        </div>
+        
+        <div class="desktop-icon" style="left: 20px; top: 260px;" onclick="openWindow('file-creator')">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTEzLDlIMThWMTFIMTNWOU0xMywxMkgxNlYxNEgxM1YxMk0xOSwzSDE0LjgyTDExLjgyLDBNNSwyNEMyLDI0LDIyLDIyLDIyLDE5VjVDMjIsMy4yLDIwLjgsMS43LDE5LDFMMTksM00xMiwzTDksMUg1QzMuOSwxLDMsMS45LDMsM1YxOUMzLDIwLjEsMy45LDIxLDUsMjFIMTlDMjAuMSwyMSwyMSwyMC4xLDIxLDE5VjZNMTIsM1oiIC8+PC9zdmc+" alt="文件创建器">
+            <span>文件创建器</span>
+        </div>
+        
+        <div class="desktop-icon" style="left: 20px; top: 340px;" onclick="runVirus()">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTEyLDFMMTIsMTJMMTIsMjNNMTIsMTJMMTksNUw1LDE5TTEyLDEyTDIyLDEyTTEyLDEyTDIsMTJNMTIsMTJMMTIuMDEsMi4wMU0xMiwxMkwxMiwyMk0xMiwxMkwxOSwxOU01LDUuMDFMMTksMTkiIC8+PC9zdmc+" alt="病毒">
+            <span>病毒软件</span>
+        </div>
+        
+        <!-- 音频元素 -->
+        <audio id="audio-player" src="默认播放音乐.mp3"></audio>
+        
+        <!-- 窗口 -->
+        <div id="my-computer" class="window" style="width: 500px; height: 400px; left: 100px; top: 50px;">
+            <div class="window-header">
+                <div class="window-title">此电脑</div>
+                <div class="window-close" onclick="closeWindow('my-computer')">×</div>
+            </div>
+            <div class="window-content">
+                <div class="disk-info">
+                    <div class="disk-icon">💽</div>
+                    <div class="disk-progress">
+                        <div class="disk-progress-bar"></div>
+                    </div>
+                    <div class="disk-details">
+                        <div>本地磁盘 (C:)</div>
+                        <div>999GB 可用，共 999GB</div>
+                    </div>
+                </div>
+                <div class="disk-info">
+                    <div class="disk-icon">💽</div>
+                    <div class="disk-progress">
+                        <div class="disk-progress-bar" style="width: 0%"></div>
+                    </div>
+                    <div class="disk-details">
+                        <div>本地磁盘 (D:)</div>
+                        <div>0GB 可用，共 0GB</div>
+                    </div>
+                </div>
+                <button onclick="createPartition()" style="margin-top: 20px; padding: 5px 10px; background-color: #4CAF50; border: none; color: white; border-radius: 3px; cursor: pointer;">分盘</button>
+            </div>
+        </div>
+        
+        <!-- 会闹浏览器窗口 -->
+        <div id="bing-browser" class="window browser-window" style="left: 150px; top: 30px;">
+            <div class="window-header">
+                <div class="window-title">会闹浏览器 - bing.com</div>
+                <div class="window-close" onclick="closeWindow('bing-browser')">×</div>
+            </div>
+            <iframe src="https://www.bing.com" class="window-content browser-content"></iframe>
+        </div>
+        
+        <!-- 文件创建器窗口 -->
+        <div id="file-creator" class="window file-creator" style="left: 200px; top: 60px;">
+            <div class="window-header">
+                <div class="window-title">文件创建器</div>
+                <div class="window-close" onclick="closeWindow('file-creator')">×</div>
+            </div>
+            <div class="window-content">
+                <div class="file-type-selector">
+                    <label>文件类型：</label>
+                    <select id="file-type">
+                        <option value="txt">TXT 文本文件</option>
+                        <option value="docx">DOCX Word文档</option>
+                    </select>
+                </div>
+                <input type="text" id="file-name" class="file-name-input" placeholder="输入文件名（不带扩展名）">
+                <textarea id="file-content" class="file-content-textarea" placeholder="输入文件内容"></textarea>
+                <button class="create-file-btn" onclick="createFile()">创建文件</button>
+                <div id="file-status" style="margin-top: 10px;"></div>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- 蓝屏界面 -->
+    <div class="blue-screen" id="blue-screen">
+        <div class="blue-screen-content">
+            <div class="blue-screen-title">:(</div>
+            <div class="blue-screen-text">
+                你的电脑遇到问题，需要重启。<br>
+                我们只收集某些错误信息，然后你可以重新启动。
+            </div>
+            <div class="blue-screen-text" id="blue-screen-progress-text">
+                已完成 0%，请不要关闭你的计算机...
+            </div>
+            <div class="blue-screen-progress">
+                <div class="blue-screen-progress-bar" id="blue-screen-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="taskbar">
+        <div class="start-button" onclick="toggleStartMenu()">
+            <span>开始</span>
+        </div>
+        <div class="start-menu" id="start-menu">
+            <div class="start-menu-item" onclick="openWindow('my-computer')">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTQsMUEyLDIgMCAwLDAgMiwzdjE4YTIgMiAwIDAsMCAyLDJoMTZhMiAyIDAgMCwwIDItMlYzQTIsMiAwIDAsMCAyMCwxSDRNNCwzaDE2djE4SDRWMyIvPjwvc3ZnPg==" alt="此电脑">
+                <span>此电脑</span>
+            </div>
+            <div class="start-menu-item" onclick="playAudio()">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyLDIwQTgsOCAwIDAsMSA0LDEyQTgsOCAwIDAsMSAxMiw0QTgsOCAwIDAsMSAyMCwxMkE4LDggMCAwLDEgMTIsMjBNMTIsMkExMCwxMCAwIDAsMCAyLDEyQTEwLDEwIDAgMCwwIDEyLDIyQTEwLDEwIDAgMCwwIDIyLDEyQTEwLDEwIDAgMCwwIDEyLDJNMTAsMTYuNUwxNiwxMkwxMCw3LjVWMTYuNVoiIC8+PC9zdmc+" alt="会闹音乐">
+                <span>会闹音乐</span>
+            </div>
+            <div class="start-menu-item" onclick="openWindow('bing-browser')">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTE5LDE4SDFWNEgxOU0yMCwyMEg0VjIySDE5VjI0SDIwVjIwTTQuMiw5SDYuN0w3LjUsNy42NEwxMC4xLDEzSDEyLjhMMTUuMyw3LjY0TDE2LjEsOUgxOC44TDE0LjQsMTYuODZMMTcuNiwyMUgxNC45TDEyLjEsMTQuOTlMOS4zLDIxSDYuNUw5LjcsMTYuODZMNC4yLDlaTTIxLDFBMiwyIDAgMCwxIDIzLDNWMTdBMiwyIDAgMCwxIDIxLDE5SDNBMiwyIDAgMCwxIDEsMTdWM0EyLDIgMCAwLDEgMywxSDIxTTIxLDNIM1YxN0gyMVYzWiIgLz48L3N2Zz4=" alt="会闹浏览器">
+                <span>会闹浏览器</span>
+            </div>
+            <div class="start-menu-item" onclick="openWindow('file-creator')">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEzLDlIMThWMTFIMTNWOU0xMywxMkgxNlYxNEgxM1YxMk0xOSwzSDE0LjgyTDExLjgyLDBNNSwyNEMyLDI0LDIyLDIyLDIyLDE5VjVDMjIsMy4yLDIwLjgsMS43LDE5LDFMMTksM00xMiwzTDksMUg1QzMuOSwxLDMsMS45LDMsM1YxOUMzLDIwLjEsMy45LDIxLDUsMjFIMTlDMjAuMSwyMSwyMSwyMC4xLDIxLDE5VjZNMTIsM1oiIC8+PC9zdmc+" alt="文件创建器">
+                <span>文件创建器</span>
+            </div>
+            <div class="start-menu-item" onclick="runVirus()">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyLDFMMTIsMTJMMTIsMjNNMTIsMTJMMTksNUw1LDE5TTEyLDEyTDIyLDEyTTEyLDEyTDIsMTJNMTIsMTJMMTIuMDEsMi4wMU0xMiwxMkwxMiwyMk0xMiwxMkwxOSwxOU01LDUuMDFMMTksMTkiIC8+PC9zdmc+" alt="病毒软件">
+                <span>病毒软件</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 打开窗口
+        function openWindow(windowId) {
+            document.getElementById(windowId).style.display = 'block';
+            document.getElementById('start-menu').style.display = 'none';
+        }
+        
+        // 关闭窗口
+        function closeWindow(windowId) {
+            document.getElementById(windowId).style.display = 'none';
+        }
+        
+        // 切换开始菜单
+        function toggleStartMenu() {
+            const menu = document.getElementById('start-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        // 点击其他地方关闭开始菜单
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.start-button') && !e.target.closest('.start-menu')) {
+                document.getElementById('start-menu').style.display = 'none';
+            }
+        });
+        
+        // 播放音频
+        function playAudio() {
+            const audio = document.getElementById('audio-player');
+            if (audio.paused) {
+                audio.play().catch(e => alert('无法播放音频: ' + e.message));
+            } else {
+                audio.pause();
+            }
+            document.getElementById('start-menu').style.display = 'none';
+        }
+        
+        // 分盘功能
+        function createPartition() {
+            const dDisk = document.querySelectorAll('.disk-progress-bar')[1];
+            const dDetails = document.querySelectorAll('.disk-details')[1];
+            
+            if (dDisk.style.width === '0%') {
+                dDisk.style.width = '50%';
+                dDetails.innerHTML = '<div>本地磁盘 (D:)</div><div>500GB 可用，共 500GB</div>';
+                alert('已成功创建D盘分区 (500GB)');
+            } else {
+                alert('D盘分区已存在');
+            }
+        }
+        
+        // 创建文件功能
+        function createFile() {
+            const fileType = document.getElementById('file-type').value;
+            const fileName = document.getElementById('file-name').value.trim();
+            const fileContent = document.getElementById('file-content').value;
+            const statusElement = document.getElementById('file-status');
+            
+            if (!fileName) {
+                statusElement.textContent = '错误：请输入文件名';
+                statusElement.style.color = 'red';
+                return;
+            }
+            
+            // 保存到localStorage
+            const fileData = {
+                type: fileType,
+                name: fileName,
+                content: fileContent,
+                created: new Date().toISOString()
+            };
+            
+            // 获取现有文件或初始化数组
+            let files = JSON.parse(localStorage.getItem('hn_files') || '[]');
+            files.push(fileData);
+            localStorage.setItem('hn_files', JSON.stringify(files));
+            
+            statusElement.textContent = `成功创建文件: ${fileName}.${fileType}`;
+            statusElement.style.color = 'green';
+            
+            // 清空输入
+            document.getElementById('file-name').value = '';
+            document.getElementById('file-content').value = '';
+            
+            // 3秒后清除状态
+            setTimeout(() => {
+                statusElement.textContent = '';
+            }, 3000);
+        }
+        
+        // 病毒功能
+        function runVirus() {
+            // 显示警告
+            alert('你的私人电脑废了！');
+            
+            // 显示蓝屏
+            const blueScreen = document.getElementById('blue-screen');
+            const progressBar = document.getElementById('blue-screen-progress-bar');
+            const progressText = document.getElementById('blue-screen-progress-text');
+            
+            blueScreen.style.display = 'flex';
+            document.getElementById('start-menu').style.display = 'none';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 45;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+                progressText.textContent = `已完成 ${progress}%，请不要关闭你的计算机...`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        window.location.href = '2.html';
+                    }, 1000);
+                }
+            }, 1000);
+        }
+        
+        // 窗口拖动功能
+        const windows = document.querySelectorAll('.window');
+        windows.forEach(window => {
+            const header = window.querySelector('.window-header');
+            let isDragging = false;
+            let offsetX, offsetY;
+            
+            header.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                offsetX = e.clientX - window.getBoundingClientRect().left;
+                offsetY = e.clientY - window.getBoundingClientRect().top;
+                window.style.zIndex = 1000;
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                window.style.left = (e.clientX - offsetX) + 'px';
+                window.style.top = (e.clientY - offsetY) + 'px';
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+        });
+    </script>
+</body>
+</html>
